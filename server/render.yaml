@@ -2,6 +2,7 @@
   - type: web
     name: helpinder-cwa
     env: node
+    rootDir: server
     buildCommand: npm install
     startCommand: node server.js
     plan: free
