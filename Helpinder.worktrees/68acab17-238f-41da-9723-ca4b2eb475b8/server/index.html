@@ -1,0 +1,2693 @@
+﻿<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#6C5CE7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Helpinder" />
+    <meta
+      name="description"
+      content="Helpinder — Тиндер добрых дел. Помогай людям рядом!"
+    />
+
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <script
+      src="https://api-maps.yandex.ru/2.1/?apikey=1b690a2a-d06d-47ee-a98d-16752161ddfc&amp;lang=ru_RU"
+      type="text/javascript"
+    ></script>
+    <title>Helpinder — Тиндер добрых дел</title>
+    <style>
+      :root,
+      [data-theme='light'] {
+        --bg: #f7f5fb;
+        --card: #ffffff;
+        --card-border: #e8e0f0;
+        --txt: #1a1525;
+        --sub: #7c7296;
+        --acc: #6c5ce7;
+        --acc2: #ff6b8a;
+        --grn: #00c896;
+        --gld: #ffb800;
+        --blu: #5b8def;
+        --pnk: #ff6b8a;
+        --red: #ff4757;
+        --warn: #ffb800;
+        --shadow: 0 8px 32px rgba(108, 92, 231, 0.12);
+        --radius: 24px;
+        --nav-h: 64px;
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --header-bg: rgba(255, 255, 255, 0.7);
+        --nav-bg: rgba(255, 255, 255, 0.85);
+        --chip-bg: rgba(108, 92, 231, 0.08);
+        --chip-color: var(--acc);
+        --filter-bar-bg: rgba(255, 255, 255, 0.6);
+        --app-bg: linear-gradient(
+          135deg,
+          #f0ebff 0%,
+          #fff5f5 50%,
+          #f0f5ff 100%
+        );
+        --input-bg: #fff;
+        --input-border: #e8e0f0;
+        --chat-input-bg: #f5f3fa;
+        --stat-card-bg: #fff;
+        --ach-bg: rgba(108, 92, 231, 0.08);
+        --ach-color: var(--acc);
+        --divider: #f0ecf8;
+        --chat-item-border: rgba(108, 92, 231, 0.06);
+        --chart-bg: #fff;
+        --history-bg: #fff;
+        --onboarding-bg: linear-gradient(
+          135deg,
+          #f0ebff 0%,
+          #fff5f5 50%,
+          #f0f5ff 100%
+        );
+      }
+      [data-theme='dark'] {
+        --bg: #0f0b1a;
+        --card: #1a1530;
+        --card-border: #2a2540;
+        --txt: #f0ecff;
+        --sub: #8b82a8;
+        --acc: #8b74f7;
+        --acc2: #ff7b9a;
+        --grn: #00e8a8;
+        --gld: #ffc940;
+        --blu: #73a8ff;
+        --pnk: #ff7b9a;
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --header-bg: rgba(15, 11, 26, 0.85);
+        --nav-bg: rgba(15, 11, 26, 0.9);
+        --chip-bg: rgba(139, 116, 247, 0.15);
+        --chip-color: #b4a0ff;
+        --filter-bar-bg: rgba(15, 11, 26, 0.6);
+        --app-bg: #0f0b1a;
+        --input-bg: #1a1530;
+        --input-border: #2a2540;
+        --chat-input-bg: #1a1530;
+        --stat-card-bg: #1a1530;
+        --ach-bg: rgba(139, 116, 247, 0.15);
+        --ach-color: #b4a0ff;
+        --divider: #2a2540;
+        --chat-item-border: rgba(139, 116, 247, 0.1);
+        --chart-bg: #1a1530;
+        --history-bg: #1a1530;
+        --onboarding-bg: #0f0b1a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        height: 100%;
+        overflow: hidden;
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui,
+          sans-serif;
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+      }
+      .app {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        max-width: 480px;
+        margin: 0 auto;
+        background: var(--app-bg);
+        position: relative;
+        overflow: hidden;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        z-index: 10;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: var(--header-bg);
+        border-bottom: 1px solid var(--divider);
+      }
+      .header h1 {
+        font-size: 22px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--acc), var(--acc2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .theme-toggle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: var(--chip-bg);
+        color: var(--chip-color);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        -webkit-user-select: auto;
+        user-select: auto;
+        touch-action: manipulation;
+      }
+      .theme-toggle:active {
+        transform: scale(0.9);
+      }
+      .header-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--acc);
+        background: var(--chip-bg);
+        padding: 8px 14px;
+        border-radius: 20px;
+      }
+      .header-badge .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--grn);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .filter-bar {
+        padding: 8px 16px;
+        z-index: 5;
+        background: var(--filter-bar-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--divider);
+      }
+      .filter-scroll {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .filter-scroll::-webkit-scrollbar {
+        height: 0;
+      }
+      .filter-chip {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1.5px solid var(--card-border);
+        background: var(--card);
+        color: var(--sub);
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+        -webkit-user-select: auto;
+        user-select: auto;
+        touch-action: manipulation;
+      }
+      .filter-chip.active {
+        background: var(--acc);
+        border-color: var(--acc);
+        color: #fff;
+      }
+      .filter-chip:active {
+        transform: scale(0.95);
+      }
+      .tab-content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+      }
+      .tab {
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+        display: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .tab.active {
+        display: flex;
+        flex-direction: column;
+      }
+      .tab::-webkit-scrollbar {
+        width: 0;
+      }
+      .feed-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 0 4px;
+      }
+      .card-stack {
+        position: relative;
+        width: calc(100% - 32px);
+        max-width: 360px;
+        height: 430px;
+        margin: 0 auto;
+      }
+      .card-stack.dragging * {
+        transition: none !important;
+      }
+      .card-item {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius);
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+        will-change: transform;
+      }
+      .card-item:nth-child(2) {
+        transform: translateY(6px) scale(0.96);
+        z-index: 2;
+        opacity: 0.9;
+      }
+      .card-item:nth-child(3) {
+        transform: translateY(12px) scale(0.92);
+        z-index: 1;
+        opacity: 0.7;
+      }
+      .card-item:nth-child(n + 4) {
+        display: none;
+      }
+      .card-stripe {
+        height: 5px;
+        border-radius: 5px 5px 0 0;
+      }
+      .card-body {
+        padding: 20px 22px 16px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .card-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .card-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--txt);
+        line-height: 1.2;
+      }
+      .card-meta {
+        font-size: 11px;
+        color: var(--sub);
+        margin-top: 2px;
+      }
+      .card-urgency {
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 12px;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      .card-category {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+      }
+      .card-desc {
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--txt);
+        flex: 1;
+      }
+      .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--sub);
+        border-top: 1px solid var(--divider);
+        padding-top: 10px;
+        margin-top: 8px;
+      }
+      .card-hint {
+        font-size: 10px;
+        opacity: 0.6;
+      }
+      .swipe-overlay {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 32px);
+        max-width: 360px;
+        height: 430px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+        font-weight: 900;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        z-index: 5;
+      }
+      .swipe-overlay.nope {
+        color: var(--red);
+        border: 4px solid var(--red);
+      }
+      .swipe-overlay.like {
+        color: var(--grn);
+        border: 4px solid var(--grn);
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 8px 0 12px;
+      }
+      .action-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1.5px solid var(--card-border);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: var(--card);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.15s;
+        -webkit-user-select: auto;
+        user-select: auto;
+        touch-action: manipulation;
+      }
+      .action-btn:active {
+        transform: scale(0.9);
+      }
+      .action-btn.rewind {
+        color: var(--gld);
+        font-size: 16px;
+      }
+      .action-btn.skip {
+        color: var(--sub);
+      }
+      .action-btn.boost {
+        color: var(--acc);
+        font-size: 15px;
+      }
+      .action-btn.like {
+        width: 58px;
+        height: 58px;
+        font-size: 26px;
+        color: var(--grn);
+        border-color: rgba(0, 200, 150, 0.25);
+      }
+      .action-btn.super {
+        color: var(--gld);
+        font-size: 17px;
+      }
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        gap: 10px;
+        opacity: 0.7;
+        text-align: center;
+        padding: 20px;
+      }
+      .empty-state .emoji {
+        font-size: 52px;
+      }
+      .empty-state h2 {
+        font-size: 20px;
+        color: var(--txt);
+        font-weight: 700;
+      }
+      .empty-state p {
+        font-size: 14px;
+        color: var(--sub);
+        max-width: 260px;
+      }
+      .map-container {
+        flex: 1;
+        position: relative;
+        min-height: 300px;
+      }
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+      .map-legend {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 16px;
+        padding: 12px 16px;
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--card-border);
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        color: var(--txt);
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .chat-list {
+        flex: 1;
+        overflow-y: auto;
+      }
+      .chat-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        cursor: pointer;
+        transition: background 0.15s;
+        border-bottom: 1px solid var(--chat-item-border);
+      }
+      .chat-item:active {
+        background: var(--chip-bg);
+      }
+      .chat-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .chat-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .chat-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--txt);
+      }
+      .chat-last {
+        font-size: 13px;
+        color: var(--sub);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .chat-meta {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .chat-time {
+        font-size: 11px;
+        color: var(--sub);
+      }
+      .chat-badge {
+        display: inline-block;
+        background: var(--acc);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        text-align: center;
+        line-height: 20px;
+        padding: 0 6px;
+        margin-top: 4px;
+      }
+      .chat-empty {
+        text-align: center;
+        padding: 40px;
+        color: var(--sub);
+      }
+      .chat-detail {
+        position: absolute;
+        inset: 0;
+        background: var(--bg);
+        z-index: 20;
+        display: none;
+        flex-direction: column;
+      }
+      .chat-detail.active {
+        display: flex;
+      }
+      .chat-detail-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--header-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--divider);
+      }
+      .chat-detail-header .back-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: none;
+        background: var(--chip-bg);
+        color: var(--acc);
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .msg {
+        max-width: 80%;
+        padding: 12px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        line-height: 1.4;
+        animation: msgIn 0.3s ease;
+      }
+      .msg.in {
+        align-self: flex-start;
+        background: var(--card);
+        border-bottom-left-radius: 6px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        color: var(--txt);
+      }
+      .msg.out {
+        align-self: flex-end;
+        background: var(--acc);
+        color: #fff;
+        border-bottom-right-radius: 6px;
+        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2);
+      }
+      .msg .time {
+        font-size: 10px;
+        opacity: 0.6;
+        margin-top: 4px;
+      }
+      @keyframes msgIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .chat-input-bar {
+        display: flex;
+        gap: 8px;
+        padding: 10px 16px calc(10px + var(--safe-bottom));
+        background: var(--card);
+        border-top: 1px solid var(--divider);
+        align-items: center;
+      }
+      .chat-input-bar input {
+        flex: 1;
+        border: none;
+        padding: 12px 16px;
+        border-radius: 24px;
+        background: var(--chat-input-bg);
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+        color: var(--txt);
+      }
+      .chat-input-bar .send-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: none;
+        background: var(--acc);
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s;
+      }
+      .chat-input-bar .send-btn:active {
+        transform: scale(0.9);
+      }
+      .create-form {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .create-form h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--txt);
+      }
+      .create-form .subtitle {
+        font-size: 13px;
+        color: var(--sub);
+        margin-bottom: 4px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--sub);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1.5px solid var(--input-border);
+        font-size: 14px;
+        font-family: inherit;
+        color: var(--txt);
+        background: var(--input-bg);
+        outline: none;
+        transition: border-color 0.2s;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: var(--acc);
+      }
+      .form-group textarea {
+        min-height: 110px;
+        resize: none;
+      }
+      .submit-btn {
+        width: 100%;
+        padding: 16px;
+        border-radius: 28px;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, var(--acc), var(--acc2));
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(108, 92, 231, 0.25);
+        transition: all 0.15s;
+        -webkit-user-select: auto;
+        user-select: auto;
+        touch-action: manipulation;
+      }
+      .submit-btn:active {
+        transform: scale(0.97);
+      }
+      .status-msg {
+        font-size: 13px;
+        text-align: center;
+        min-height: 20px;
+        font-weight: 600;
+      }
+      .profile-content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(135deg, var(--acc), var(--acc2));
+        box-shadow: 0 6px 24px rgba(108, 92, 231, 0.25);
+      }
+      .profile-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--txt);
+      }
+      .profile-level {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--acc);
+        background: var(--chip-bg);
+        padding: 6px 14px;
+        border-radius: 14px;
+      }
+      .xp-bar {
+        width: 100%;
+        max-width: 240px;
+        height: 6px;
+        background: var(--divider);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 4px;
+      }
+      .xp-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--acc), var(--acc2));
+        border-radius: 3px;
+        transition: width 0.5s;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
+        max-width: 340px;
+        margin-top: 6px;
+      }
+      .stat-card {
+        background: var(--stat-card-bg);
+        border-radius: 18px;
+        padding: 16px 10px;
+        text-align: center;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        transition: transform 0.15s;
+        border: 1px solid var(--card-border);
+        cursor: pointer;
+      }
+      .stat-card:active {
+        transform: scale(0.96);
+      }
+      .stat-icon {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+      .stat-val {
+        font-size: 26px;
+        font-weight: 900;
+      }
+      .stat-val.gold {
+        color: var(--gld);
+      }
+      .stat-val.green {
+        color: var(--grn);
+      }
+      .stat-val.blue {
+        color: var(--blu);
+      }
+      .stat-val.pink {
+        color: var(--pnk);
+      }
+      .stat-label {
+        font-size: 10px;
+        color: var(--sub);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 2px;
+      }
+      .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--txt);
+        width: 100%;
+        max-width: 340px;
+        margin-top: 14px;
+        margin-bottom: 6px;
+      }
+      .chart-container {
+        width: 100%;
+        max-width: 340px;
+        background: var(--chart-bg);
+        border-radius: 18px;
+        padding: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--card-border);
+      }
+      .chart-container canvas {
+        width: 100% !important;
+        max-height: 180px;
+      }
+      .history-list {
+        width: 100%;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .history-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        background: var(--history-bg);
+        border-radius: 14px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+        border: 1px solid var(--card-border);
+      }
+      .history-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      .history-info {
+        flex: 1;
+      }
+      .history-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--txt);
+      }
+      .history-date {
+        font-size: 11px;
+        color: var(--sub);
+      }
+      .history-xp {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--grn);
+        flex-shrink: 0;
+      }
+      .achievements {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        width: 100%;
+        max-width: 340px;
+      }
+      .ach-tag {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 10px;
+        background: var(--ach-bg);
+        color: var(--ach-color);
+      }
+      .ach-tag.locked {
+        opacity: 0.4;
+        background: var(--divider);
+        color: var(--sub);
+      }
+      .daily-mission {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 340px;
+        background: var(--stat-card-bg);
+        border-radius: 18px;
+        padding: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--card-border);
+      }
+      .mission-icon {
+        font-size: 32px;
+      }
+      .mission-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--txt);
+        margin-bottom: 4px;
+      }
+      .mission-progress {
+        height: 5px;
+        background: var(--divider);
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 6px 0;
+        width: 160px;
+      }
+      .mission-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--acc), var(--acc2));
+        border-radius: 3px;
+        transition: width 0.5s;
+      }
+      .leaderboard {
+        width: 100%;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .lb-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--stat-card-bg);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        border: 1px solid var(--card-border);
+      }
+      .lb-rank {
+        font-size: 18px;
+        font-weight: 900;
+        width: 28px;
+        text-align: center;
+        color: var(--sub);
+      }
+      .lb-rank.top1 {
+        color: var(--gld);
+      }
+      .lb-rank.top2 {
+        color: #c0c0c0;
+      }
+      .lb-rank.top3 {
+        color: #cd7f32;
+      }
+      .lb-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .lb-info {
+        flex: 1;
+      }
+      .lb-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--txt);
+      }
+      .lb-score {
+        font-size: 11px;
+        color: var(--sub);
+      }
+      .lb-badge {
+        font-size: 20px;
+      }
+      .share-btn,
+      .invite-btn {
+        width: 100%;
+        max-width: 340px;
+        padding: 14px;
+        border-radius: 18px;
+        border: none;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 6px;
+        transition: all 0.15s;
+      }
+      .share-btn {
+        background: var(--chip-bg);
+        color: var(--acc);
+      }
+      .invite-btn {
+        background: linear-gradient(135deg, var(--gld), #ffa000);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(255, 184, 0, 0.25);
+      }
+      .share-btn:active,
+      .invite-btn:active {
+        transform: scale(0.97);
+      }
+      .toast-container {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--txt);
+        color: var(--bg);
+        padding: 12px 20px;
+        border-radius: 16px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        animation:
+          toastIn 0.4s ease,
+          toastOut 0.3s ease 2.2s forwards;
+        pointer-events: auto;
+        white-space: nowrap;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(-12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes toastOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-12px);
+        }
+      }
+      .match-popup {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .match-popup.active {
+        display: flex;
+      }
+      .match-content {
+        background: var(--card);
+        border-radius: 32px;
+        padding: 32px 24px;
+        text-align: center;
+        max-width: 320px;
+        width: 90%;
+        animation: popIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1.4);
+        border: 1px solid var(--card-border);
+      }
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: scale(0.7);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .match-hearts {
+        font-size: 40px;
+        margin-bottom: 8px;
+        animation: bounce 0.6s infinite alternate;
+      }
+      @keyframes bounce {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-10px);
+        }
+      }
+      .match-content h2 {
+        font-size: 28px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--acc), var(--acc2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
+      }
+      .match-content p {
+        font-size: 14px;
+        color: var(--sub);
+        margin-bottom: 16px;
+      }
+      .match-avatars {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .match-btn,
+      .match-chat-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 20px;
+        border: none;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: all 0.15s;
+      }
+      .match-btn {
+        background: var(--chip-bg);
+        color: var(--acc);
+      }
+      .match-chat-btn {
+        background: linear-gradient(135deg, var(--acc), var(--acc2));
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(108, 92, 231, 0.25);
+      }
+      .match-btn:active,
+      .match-chat-btn:active {
+        transform: scale(0.97);
+      }
+      .onboarding {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: var(--onboarding-bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 24px;
+        gap: 20px;
+      }
+      .onboarding.hidden {
+        display: none;
+      }
+      .onboard-slides {
+        position: relative;
+        width: 100%;
+        max-width: 320px;
+        height: 240px;
+        overflow: hidden;
+      }
+      .onboard-slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 12px;
+        opacity: 0;
+        transform: translateX(40px);
+        transition: all 0.4s ease;
+      }
+      .onboard-slide.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .onboard-icon {
+        font-size: 72px;
+        margin-bottom: 8px;
+      }
+      .onboard-slide h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--txt);
+      }
+      .onboard-slide p {
+        font-size: 15px;
+        color: var(--sub);
+        line-height: 1.5;
+        max-width: 280px;
+      }
+      .onboard-dots {
+        display: flex;
+        gap: 8px;
+      }
+      .onboard-dots .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--divider);
+        transition: all 0.3s;
+      }
+      .onboard-dots .dot.active {
+        background: var(--acc);
+        width: 24px;
+        border-radius: 4px;
+      }
+      .onboard-btn {
+        padding: 16px 48px;
+        border-radius: 28px;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, var(--acc), var(--acc2));
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(108, 92, 231, 0.25);
+        transition: all 0.15s;
+        -webkit-user-select: auto;
+        user-select: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(108, 92, 231, 0.3);
+      }
+      .onboard-btn:active {
+        transform: scale(0.97);
+      }
+      .nav {
+        display: flex;
+        background: var(--nav-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--divider);
+        padding: 4px 0 calc(4px + var(--safe-bottom));
+        position: relative;
+        z-index: 10;
+      }
+      .nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 6px 0;
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--sub);
+        transition: color 0.2s;
+        position: relative;
+        -webkit-user-select: auto;
+        user-select: auto;
+        touch-action: manipulation;
+      }
+      .nav-item.active {
+        color: var(--acc);
+      }
+      .nav-icon {
+        font-size: 20px;
+        line-height: 1;
+      }
+      .nav-badge {
+        position: absolute;
+        top: 2px;
+        right: calc(50% - 24px);
+        background: var(--red);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 8px;
+        text-align: center;
+        line-height: 16px;
+        padding: 0 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="onboarding" id="onboarding">
+      <div class="onboard-slides" id="onboardSlides">
+        <div class="onboard-slide active">
+          <div class="onboard-icon">🤝</div>
+          <h2>Добро пожаловать в Helpinder!</h2>
+          <p>
+            Тиндер добрых дел — здесь люди помогают людям. Просто, бесплатно,
+            рядом.
+          </p>
+        </div>
+        <div class="onboard-slide">
+          <div class="onboard-icon">💜</div>
+          <h2>Свайпай добрые дела</h2>
+          <p>
+            Видишь запрос? Свайпни вправо чтобы помочь, влево — пропустить. Как
+            в Тиндере, только с пользой!
+          </p>
+        </div>
+        <div class="onboard-slide">
+          <div class="onboard-icon">🏆</div>
+          <h2>Прокачивай доброту</h2>
+          <p>
+            Получай XP, DobroTokens, ачивки и поднимайся в рейтинге. Приглашай
+            друзей — получай бонусы!
+          </p>
+        </div>
+      </div>
+      <div class="onboard-dots">
+        <span class="dot active"></span><span class="dot"></span
+        ><span class="dot"></span>
+      </div>
+      <button class="onboard-btn" id="onboardBtn">Далее</button>
+    </div>
+    <div class="app" id="app" style="display: none">
+      <div class="header">
+        <h1>helpinder</h1>
+        <div class="header-right">
+          <button
+            class="theme-toggle"
+            onclick="toggleTheme()"
+            title="Тёмная тема"
+            id="themeToggle"
+          >
+            🌙
+          </button>
+          <div class="header-badge" id="headerBadge">
+            <span class="dot"></span><span id="headerCount">0</span> рядом
+          </div>
+        </div>
+      </div>
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-scroll">
+          <button class="filter-chip active" onclick="setFilter('all', this)">
+            Все</button
+          ><button class="filter-chip" onclick="setFilter('🍞 Продукты', this)">
+            🍞 Продукты</button
+          ><button class="filter-chip" onclick="setFilter('🐕 Выгул', this)">
+            🐕 Выгул</button
+          ><button class="filter-chip" onclick="setFilter('💊 Аптека', this)">
+            💊 Аптека</button
+          ><button
+            class="filter-chip"
+            onclick="setFilter('💻 IT-помощь', this)"
+          >
+            💻 IT</button
+          ><button class="filter-chip" onclick="setFilter('👴 Пожилому', this)">
+            👴 Пожилым</button
+          ><button
+            class="filter-chip"
+            onclick="setFilter('📦 Перенести', this)"
+          >
+            📦 Переезд
+          </button>
+        </div>
+      </div>
+      <div class="tab-content">
+        <div class="tab active" id="tabFeed">
+          <div class="feed-container">
+            <div class="card-stack" id="cardStack"></div>
+            <div class="swipe-overlay nope" id="overlayNope">НЕТ</div>
+            <div class="swipe-overlay like" id="overlayLike">ПОМОГУ!</div>
+          </div>
+          <div class="actions">
+            <button class="action-btn rewind" onclick="rewindSwipe()">↩</button
+            ><button class="action-btn skip" onclick="swipe('skip')">✕</button
+            ><button class="action-btn boost" onclick="boostRequest()">
+              ⚡</button
+            ><button class="action-btn like" onclick="swipe('help')">🤍</button
+            ><button class="action-btn super" onclick="superHelp()">⭐</button>
+          </div>
+        </div>
+        <div class="tab" id="tabMap">
+          <div class="map-container">
+            <div id="map"></div>
+            <div class="map-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #ff4757"></span
+                >Срочно
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #ffb800"></span
+                >Сегодня
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #00c896"></span>На
+                неделе
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #6c5ce7"></span>Ты
+                здесь
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab" id="tabCreate">
+          <div class="create-form">
+            <h2>✍️ Новый запрос</h2>
+            <p class="subtitle">Опиши — кто-то рядом откликнется!</p>
+            <div class="form-group">
+              <label>Категория</label
+              ><select id="cat">
+                <option value="">Выбери категорию</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Что нужно сделать?</label
+              ><textarea
+                id="desc"
+                placeholder="Опиши задачу подробнее..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Срочность</label
+              ><select id="urg">
+                <option value="">Выбери срочность</option>
+                <option>⚡ Прямо сейчас</option>
+                <option>🕐 Сегодня</option>
+                <option>📅 На неделе</option>
+              </select>
+            </div>
+            <button class="submit-btn" onclick="createRequest()">
+              Отправить запрос
+            </button>
+            <div class="status-msg" id="statusMsg"></div>
+          </div>
+        </div>
+        <div class="tab" id="tabChats">
+          <div class="chat-list" id="chatList"></div>
+          <div class="chat-detail" id="chatDetail">
+            <div class="chat-detail-header">
+              <button class="back-btn" onclick="closeChat()">←</button>
+              <div class="chat-avatar" id="chatDetailAvatar"></div>
+              <div>
+                <div class="chat-name" id="chatDetailName"></div>
+                <div
+                  style="font-size: 11px; color: var(--sub)"
+                  id="chatDetailTask"
+                ></div>
+              </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-bar">
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Сообщение..."
+                onkeydown="if (event.key === 'Enter') sendMessage()"
+              /><button class="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+        <div class="tab" id="tabProfile">
+          <div class="profile-content">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div class="profile-name" id="profileName">Пользователь</div>
+            <div class="profile-level" id="profileLevel">🌱 Росток · 15 XP</div>
+            <div class="xp-bar">
+              <div class="xp-fill" id="xpFill" style="width: 15%"></div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">🪙</div>
+                <div class="stat-val gold" id="statTokens">850</div>
+                <div class="stat-label">DobroToken</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-val green" id="statHelped">12</div>
+                <div class="stat-label">Помог</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-val blue" id="statRating">4.8</div>
+                <div class="stat-label">Рейтинг</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-val pink" id="statStreak">7 дн</div>
+                <div class="stat-label">Серия</div>
+              </div>
+            </div>
+            <div class="section-title">📊 Статистика помощи</div>
+            <div class="chart-container"><canvas id="helpChart"></canvas></div>
+            <div class="chart-container" style="margin-top: 10px">
+              <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="section-title">📋 История добрых дел</div>
+            <div class="history-list" id="historyList"></div>
+            <div class="section-title">🏅 Достижения</div>
+            <div class="achievements" id="achievements"></div>
+            <div class="section-title">🎯 Миссия дня</div>
+            <div class="daily-mission" id="dailyMission"></div>
+            <div class="section-title">👥 Топ помощников</div>
+            <div class="leaderboard" id="leaderboard"></div>
+            <button class="share-btn" onclick="shareApp()">
+              📤 Поделиться Helpinder</button
+            ><button class="invite-btn" onclick="inviteFriend()">
+              🎁 Пригласить друга (+100 DT)
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-item active" onclick="switchTab(0)">
+          <span class="nav-icon">▦</span><span>Лента</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(1)">
+          <span class="nav-icon">🗺</span><span>Карта</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(2)">
+          <span class="nav-icon">＋</span><span>Создать</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(3)">
+          <span class="nav-icon">💬</span><span>Чаты</span
+          ><span class="nav-badge" id="chatBadge" style="display: none">0</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(4)">
+          <span class="nav-icon">👤</span><span>Профиль</span>
+        </div>
+      </div>
+    </div>
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="match-popup" id="matchPopup">
+      <div class="match-content">
+        <div class="match-hearts">🤝💜🤝</div>
+        <h2>Это мэтч!</h2>
+        <p id="matchText"></p>
+        <div class="match-avatars">
+          <div
+            class="profile-avatar"
+            style="width: 60px; height: 60px; font-size: 22px"
+            id="matchAvatar1"
+          >
+            👤
+          </div>
+          <div style="font-size: 24px; color: var(--acc)">💜</div>
+          <div
+            class="profile-avatar"
+            style="width: 60px; height: 60px; font-size: 22px"
+            id="matchAvatar2"
+          >
+            ?
+          </div>
+        </div>
+        <button class="match-btn" onclick="closeMatch()">Круто! 👋</button
+        ><button
+          class="match-chat-btn"
+          onclick="
+            closeMatch()
+            switchTab(3)
+          "
+        >
+          Написать 💬
+        </button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+      const API = 'https://helpinder-bot.onrender.com'
+      const LC = window.localStorage
+      let UID =
+        LC.getItem('uid') ||
+        (LC.setItem('uid', 'user_' + Math.random().toString(36).slice(2, 10)),
+        LC.getItem('uid'))
+      let R = [],
+        I = 0,
+        map = null,
+        userPos = null,
+        activeChat = null,
+        chatData = {},
+        onboardDone = LC.getItem('onboardDone')
+      let currentFilter = 'all',
+        swipeHistory = [],
+        helpChart = null,
+        categoryChart = null,
+        notificationEnabled = false
+
+      const AVATARS = {
+        'Елена К.': 'ЕК',
+        Алексей: 'АЛ',
+        'Мария П.': 'МП',
+        Иван: 'ИВ',
+        Ольга: 'ОЛ',
+        'Анна В.': 'АВ',
+        GMG: 'GM',
+      }
+      function getUserName() {
+        return LC.getItem('userName') || 'Пользователь'
+      }
+      function getUserInitials() {
+        return LC.getItem('userInitials') || '👤'
+      }
+      function setUserName(name) {
+        LC.setItem('userName', name)
+        LC.setItem('userInitials', name.slice(0, 2).toUpperCase())
+        renderProfile()
+      }
+      const AVC = [
+        '#6C5CE7',
+        '#00C896',
+        '#FF6B8A',
+        '#5B8DEF',
+        '#FFB800',
+        '#A855F7',
+        '#FF4757',
+        '#2ED573',
+      ]
+      const UC = {
+        '⚡ Прямо сейчас': '#FF4757',
+        '🕐 Сегодня': '#FFB800',
+        '📅 На неделе': '#00C896',
+      }
+      const CC = {
+        '🍞 Продукты': ['#FFF0E0', '#E65100'],
+        '💊 Аптека': ['#E8F4F0', '#00796B'],
+        '🧹 Уборка': ['#F0ECFF', '#7B1FA2'],
+        '🐕 Выгул': ['#E0F0FF', '#1565C0'],
+        '🛠 Ремонт': ['#FFF8E0', '#F57F17'],
+        '💻 IT-помощь': ['#E8ECFF', '#283593'],
+        '📦 Перенести': ['#FFE8EC', '#C62828'],
+        '👴 Пожилому': ['#FFF0EC', '#BF360C'],
+        '🚗 Подвезти': ['#ECF8F0', '#1B5E20'],
+        '📝 Документы': ['#F5F0E8', '#5D4037'],
+        '🤝 Другое': ['#F0F0F5', '#37474F'],
+      }
+      const CATS = [
+        '🍞 Продукты',
+        '💊 Аптека',
+        '🧹 Уборка',
+        '🐕 Выгул',
+        '🛠 Ремонт',
+        '💻 IT-помощь',
+        '📦 Перенести',
+        '👴 Пожилому',
+        '🚗 Подвезти',
+        '📝 Документы',
+        '🤝 Другое',
+      ]
+      const DEMO = [
+        {
+          id: 101,
+          category: '🍞 Продукты',
+          urgency: '⚡ Прямо сейчас',
+          description: 'Бабушке 78 лет, хлеб и молоко, 3 этаж без лифта',
+          author: 'Елена К.',
+          created: 'Сегодня 14:20',
+          dist: '0.8 km',
+          lat: 55.756,
+          lon: 37.618,
+        },
+        {
+          id: 102,
+          category: '🐕 Выгул',
+          urgency: '🕐 Сегодня',
+          description: 'Выгулять лабрадора Ричи, 30 минут, парк рядом',
+          author: 'Алексей',
+          created: 'Сегодня 10:15',
+          dist: '1.2 km',
+          lat: 55.752,
+          lon: 37.625,
+        },
+        {
+          id: 103,
+          category: '💊 Аптека',
+          urgency: '📅 На неделе',
+          description: 'Купить лекарства по списку, рецепт прилагается',
+          author: 'Мария П.',
+          created: 'Вчера 18:40',
+          dist: '0.5 km',
+          lat: 55.76,
+          lon: 37.615,
+        },
+        {
+          id: 104,
+          category: '💻 IT-помощь',
+          urgency: '🕐 Сегодня',
+          description: 'Настроить роутер, не могу подключить принтер',
+          author: 'Иван',
+          created: 'Сегодня 09:00',
+          dist: '2.1 km',
+          lat: 55.758,
+          lon: 37.63,
+        },
+        {
+          id: 105,
+          category: '📦 Перенести',
+          urgency: '📅 На неделе',
+          description: 'Помочь с переездом: 2 коробки и стул, 2 этаж',
+          author: 'Ольга',
+          created: 'Вчера 15:30',
+          dist: '0.3 km',
+          lat: 55.754,
+          lon: 37.612,
+        },
+        {
+          id: 106,
+          category: '👴 Пожилому',
+          urgency: '🕐 Сегодня',
+          description: 'Посидеть с дедушкой 2 часа, почитать газету',
+          author: 'Анна В.',
+          created: 'Сегодня 11:00',
+          dist: '1.5 km',
+          lat: 55.762,
+          lon: 37.62,
+        },
+      ]
+      let allRequests = DEMO.slice()
+
+      function av(name, sz = 48) {
+        let i = AVATARS[name] || name.slice(0, 2).toUpperCase()
+        let c = AVC[(name.charCodeAt(0) || 0) % AVC.length]
+        return `<div class="card-avatar" style="background:${c};width:${sz}px;height:${sz}px;font-size:${Math.floor(sz / 3)}px">${i.slice(0, 2)}</div>`
+      }
+      function cardHTML(r) {
+        let u = UC[r.urgency] || '#6C5CE7',
+          us = r.urgency.includes(' ') ? r.urgency.split(' ')[1] : r.urgency
+        let cb = CC[r.category] || ['#F0F0F5', '#37474F']
+        return `<div class="card-item"><div class="card-stripe" style="background:${u}"></div><div class="card-body"><div class="card-header">${av(r.author)}<div style="flex:1;min-width:0"><div class="card-name">${r.author}</div><div class="card-meta">📍 ${r.dist} · 🕐 ${r.created}</div></div><div class="card-urgency" style="background:${u}">${us}</div></div><div class="card-category" style="background:${cb[0]};color:${cb[1]}">${r.category}</div><div class="card-desc">${r.description}</div><div class="card-footer"><span>${r.created}</span><span class="card-hint">Нажми 🤍 чтобы помочь</span></div></div></div>`
+      }
+      function getFilteredRequests() {
+        if (currentFilter === 'all') return allRequests
+        return allRequests.filter((r) => r.category === currentFilter)
+      }
+      function render() {
+        let requests = getFilteredRequests()
+        document.getElementById('headerCount').textContent = requests.length - I
+        let h = ''
+        for (let i = 0; i < Math.min(3, requests.length - I); i++)
+          h += cardHTML(requests[I + i])
+        document.getElementById('cardStack').innerHTML = h
+        if (requests.length - I === 0) showEmpty()
+      }
+      function showEmpty() {
+        document.getElementById('cardStack').innerHTML =
+          `<div class="empty-state"><div class="emoji">🌸</div><h2>Пока тихо</h2><p>${currentFilter !== 'all' ? 'Нет запросов в этой категории.' : 'В радиусе 10 км нет запросов.'} Создай свой или зайди позже!</p><button class="submit-btn" onclick="switchTab(2)" style="width:auto;padding:10px 24px;margin-top:12px">Создать запрос</button></div>`
+      }
+      function setFilter(cat, el) {
+        currentFilter = cat
+        document
+          .querySelectorAll('.filter-chip')
+          .forEach((c) => c.classList.remove('active'))
+        el.classList.add('active')
+        I = 0
+        render()
+        updateBadge()
+      }
+      async function load() {
+        try {
+          let r = await fetch(API + '/api/requests?user_id=' + UID + '&test=1')
+          if (r.ok) {
+            let d = await r.json()
+            allRequests = d.requests || []
+          }
+        } catch (e) {
+          allRequests = DEMO.slice()
+        }
+        if (!allRequests.length) allRequests = DEMO.slice()
+        I = 0
+        render()
+        updateBadge()
+      }
+      function updateBadge() {
+        let requests = getFilteredRequests()
+        let cnt = requests.length - I
+        document.getElementById('headerCount').textContent = cnt
+        document
+          .getElementById('headerBadge')
+          .querySelector('.dot').style.background =
+          cnt > 0 ? 'var(--grn)' : 'var(--sub)'
+      }
+      async function swipe(dir) {
+        let requests = getFilteredRequests()
+        if (!requests.length || I >= requests.length) return
+        let r = requests[I]
+        swipeHistory.push({
+          request: r,
+          dir: dir,
+          idx: I,
+          filter: currentFilter,
+        })
+        let cards = document.querySelectorAll('.card-item')
+        if (cards[0]) {
+          cards[0].style.transform =
+            dir === 'help'
+              ? 'translateX(150%) rotate(18deg)'
+              : 'translateX(-150%) rotate(-18deg)'
+          cards[0].style.opacity = '0'
+        }
+        try {
+          await fetch(API + '/api/' + dir, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: UID, request_id: r.id }),
+          })
+          if (dir === 'help') {
+            addXP(10)
+            addTokens(5)
+            addHistoryEntry(r)
+            sendNotification(
+              'Ты откликнулся на помощь!',
+              'Ты помогаешь ' +
+                r.author +
+                ' — ' +
+                r.description.slice(0, 40) +
+                '...',
+            )
+            if (Math.random() > 0.6)
+              setTimeout(() => showMatchPopup(r.author), 800)
+            playSound('help')
+            showToast('+10 XP · +5 🪙')
+          }
+        } catch (e) {}
+        I++
+        await new Promise((resolve) => setTimeout(resolve, 400))
+        if (I >= requests.length) {
+          I = requests.length
+          showEmpty()
+          showToast('Все запросы просмотрены! 🌟')
+        } else {
+          render()
+        }
+        updateBadge()
+        updateProfileStats()
+      }
+      function rewindSwipe() {
+        if (!swipeHistory.length) {
+          showToast('Нечего отменять')
+          return
+        }
+        let last = swipeHistory.pop()
+        currentFilter = last.filter
+        I = last.idx
+        render()
+        updateBadge()
+        addXP(last.dir === 'help' ? -10 : 0)
+        addTokens(last.dir === 'help' ? -5 : 0)
+        updateProfileStats()
+        showToast('↩ Отменено!')
+      }
+      function boostRequest() {
+        let requests = getFilteredRequests()
+        if (!requests.length || I >= requests.length) return
+        showToast('⚡ Запрос в приоритете!')
+        addTokens(-10)
+        swipe('help')
+      }
+      function superHelp() {
+        let requests = getFilteredRequests()
+        if (!requests.length || I >= requests.length) return
+        showToast('⭐ Супер-помощь! (+20 XP, +15 DT)')
+        addXP(20)
+        addTokens(15)
+        swipe('help')
+      }
+      let touchStartX = 0,
+        touchStartY = 0,
+        touchCurrentX = 0,
+        isDragging = false
+      function setupDrag() {
+        let stack = document.getElementById('cardStack')
+        stack.addEventListener(
+          'touchstart',
+          (e) => {
+            let requests = getFilteredRequests()
+            if (!requests.length || I >= requests.length) return
+            touchStartX = e.touches[0].clientX
+            touchStartY = e.touches[0].clientY
+            isDragging = true
+            stack.classList.add('dragging')
+          },
+          { passive: true },
+        )
+        stack.addEventListener(
+          'touchmove',
+          (e) => {
+            if (!isDragging) return
+            touchCurrentX = e.touches[0].clientX
+            let dx = touchCurrentX - touchStartX
+            let cards = document.querySelectorAll('.card-item')
+            if (cards[0]) {
+              cards[0].style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`
+              let pct = Math.abs(dx) / 120
+              let likeOverlay = document.getElementById('overlayLike')
+              let nopeOverlay = document.getElementById('overlayNope')
+              if (dx > 40) {
+                likeOverlay.style.opacity = Math.min(pct, 1)
+                nopeOverlay.style.opacity = 0
+              } else if (dx < -40) {
+                nopeOverlay.style.opacity = Math.min(pct, 1)
+                likeOverlay.style.opacity = 0
+              } else {
+                likeOverlay.style.opacity = 0
+                nopeOverlay.style.opacity = 0
+              }
+            }
+          },
+          { passive: true },
+        )
+        stack.addEventListener(
+          'touchend',
+          (e) => {
+            if (!isDragging) return
+            isDragging = false
+            stack.classList.remove('dragging')
+            let dx = touchCurrentX - touchStartX
+            document.getElementById('overlayLike').style.opacity = 0
+            document.getElementById('overlayNope').style.opacity = 0
+            if (Math.abs(dx) > 80) {
+              if (dx > 0) swipe('help')
+              else swipe('skip')
+            } else {
+              let cards = document.querySelectorAll('.card-item')
+              if (cards[0]) {
+                cards[0].style.transform = ''
+                cards[0].style.opacity = ''
+              }
+            }
+          },
+          { passive: true },
+        )
+      }
+      function switchTab(n) {
+        let tabs = document.querySelectorAll('.tab')
+        let navItems = document.querySelectorAll('.nav-item')
+        tabs.forEach((t, i) => t.classList.toggle('active', i === n))
+        navItems.forEach((ni, i) => ni.classList.toggle('active', i === n))
+        let filterBar = document.getElementById('filterBar')
+        filterBar.style.display = n === 0 ? 'block' : 'none'
+        if (n === 0) load()
+        if (n === 1 && !map) initMap()
+        if (n === 3) renderChatList()
+        if (n === 4) {
+          renderProfile()
+          initCharts()
+        }
+      }
+      function toggleTheme() {
+        let html = document.documentElement
+        let btn = document.getElementById('themeToggle')
+        let isDark = html.getAttribute('data-theme') === 'dark'
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark')
+        btn.textContent = isDark ? '🌙' : '☀️'
+        LC.setItem('theme', isDark ? 'light' : 'dark')
+        let meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.content = isDark ? '#6C5CE7' : '#0F0B1A'
+        if (map && map.container) map.container.fitToViewport()
+      }
+      function initTheme() {
+        let saved = LC.getItem('theme') || 'light'
+        document.documentElement.setAttribute('data-theme', saved)
+        document.getElementById('themeToggle').textContent =
+          saved === 'dark' ? '☀️' : '🌙'
+      }
+      async function createRequest() {
+        let c = document.getElementById('cat').value
+        let d = document.getElementById('desc').value
+        let u = document.getElementById('urg').value
+        let s = document.getElementById('statusMsg')
+        if (!c || !d || !u) {
+          s.textContent = '❌ Заполни все поля'
+          s.style.color = '#FF4757'
+          s.style.opacity = 1
+          setTimeout(() => (s.style.opacity = 0), 2500)
+          return
+        }
+        try {
+          let r = await fetch(API + '/api/create_request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: UID,
+              category: c,
+              description: d,
+              urgency: u,
+            }),
+          })
+          let j = await r.json()
+          s.textContent = '✅ Запрос #' + j.request_id + ' создан! +5 DT'
+          s.style.color = '#00C896'
+          s.style.opacity = 1
+          document.getElementById('desc').value = ''
+          addTokens(5)
+          addXP(5)
+          updateProfileStats()
+          setTimeout(() => (s.style.opacity = 0), 3000)
+        } catch (e) {
+          s.textContent = '❌ Ошибка соединения'
+          s.style.color = '#FF4757'
+          s.style.opacity = 1
+          setTimeout(() => (s.style.opacity = 0), 2500)
+        }
+      }
+      function populateCategories() {
+        let sel = document.getElementById('cat')
+        sel.innerHTML = '<option value="">Выбери категорию</option>'
+        CATS.forEach((cat) => {
+          let o = document.createElement('option')
+          o.value = cat
+          o.textContent = cat
+          sel.appendChild(o)
+        })
+      }
+      function initMap() {
+        try {
+          ymaps.ready(() => {
+            map = new ymaps.Map('map', {
+              center: [55.7558, 37.6173],
+              zoom: 13,
+              controls: ['zoomControl', 'typeSelector'],
+            })
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition((pos) => {
+                userPos = [pos.coords.latitude, pos.coords.longitude]
+                let userPlacemark = new ymaps.Placemark(
+                  userPos,
+                  { balloonContent: 'Ты здесь 🏠' },
+                  { preset: 'islands#circleIcon', iconColor: '#6C5CE7' },
+                )
+                map.geoObjects.add(userPlacemark)
+                let requests = allRequests.length ? allRequests : DEMO
+                requests.forEach((r) => {
+                  if (r.lat && r.lon) {
+                    let u = UC[r.urgency] || '#6C5CE7'
+                    let p = new ymaps.Placemark(
+                      [r.lat, r.lon],
+                      {
+                        balloonContent:
+                          '<b>' +
+                          r.category +
+                          '</b><br>' +
+                          r.description +
+                          '<br><small>' +
+                          r.author +
+                          ' · ' +
+                          r.dist +
+                          '</small>',
+                      },
+                      { preset: 'islands#circleIcon', iconColor: u },
+                    )
+                    map.geoObjects.add(p)
+                  }
+                })
+              })
+            }
+          })
+        } catch (e) {
+          document.querySelector('.map-container').innerHTML =
+            '<div class="empty-state"><div class="emoji">🗺</div><h2>Карта недоступна</h2><p>Без интернета карта не работает</p></div>'
+        }
+      }
+      function renderChatList() {
+        let cl = document.getElementById('chatList')
+        let demoChats = [
+          {
+            id: 1,
+            name: 'Елена К.',
+            last: 'Спасибо большое за помощь!',
+            time: '14:20',
+            unread: 1,
+            task: '🍞 Продукты',
+          },
+          {
+            id: 2,
+            name: 'Алексей',
+            last: 'Ричи очень рад прогулке :)',
+            time: 'Вчера',
+            unread: 0,
+            task: '🐕 Выгул',
+          },
+          {
+            id: 3,
+            name: 'Мария П.',
+            last: 'Лекарства уже купила, отбой',
+            time: 'Пн',
+            unread: 2,
+            task: '💊 Аптека',
+          },
+        ]
+        let html = ''
+        demoChats.forEach((c) => {
+          html += `<div class="chat-item" onclick="openChat(${c.id},'${c.name}','${c.task}')"><div class="chat-avatar" style="background:${AVC[c.id % AVC.length]}">${AVATARS[c.name] || c.name.slice(0, 2)}</div><div class="chat-info"><div class="chat-name">${c.name}</div><div class="chat-last">${c.last}</div></div><div class="chat-meta"><div class="chat-time">${c.time}</div>${c.unread ? `<div class="chat-badge">${c.unread}</div>` : ''}</div></div>`
+        })
+        if (!html)
+          html =
+            '<div class="chat-empty">💬<br><br>Пока нет чатов<br><small>Помоги кому-нибудь — появится чат!</small></div>'
+        cl.innerHTML = html
+      }
+      function openChat(id, name, task) {
+        activeChat = id
+        document.getElementById('chatDetail').classList.add('active')
+        document.getElementById('chatDetailAvatar').style.background =
+          AVC[id % AVC.length]
+        document.getElementById('chatDetailAvatar').textContent =
+          AVATARS[name] || name.slice(0, 2)
+        document.getElementById('chatDetailName').textContent = name
+        document.getElementById('chatDetailTask').textContent = task
+        if (!chatData[id]) {
+          chatData[id] = [
+            {
+              from: name,
+              txt: 'Привет! Спасибо, что откликнулся на мой запрос ❤️',
+              time: '14:22',
+              dir: 'in',
+            },
+            {
+              from: getUserName(),
+              txt: 'Всегда рад помочь! Когда удобно встретиться?',
+              time: '14:23',
+              dir: 'out',
+            },
+            {
+              from: name,
+              txt: 'Можно сегодня в 18:00 у подъезда?',
+              time: '14:25',
+              dir: 'in',
+            },
+            {
+              from: getUserName(),
+              txt: 'Отлично, буду!',
+              time: '14:26',
+              dir: 'out',
+            },
+          ]
+        }
+        renderMessages(id)
+        setTimeout(() => {
+          let mc = document.getElementById('chatMessages')
+          mc.scrollTop = mc.scrollHeight
+        }, 100)
+      }
+      function renderMessages(id) {
+        let msgs = chatData[id] || []
+        let html = ''
+        msgs.forEach((m) => {
+          html += `<div class="msg ${m.dir}"><div>${m.txt}</div><div class="time">${m.time}</div></div>`
+        })
+        document.getElementById('chatMessages').innerHTML = html
+        setTimeout(() => {
+          let mc = document.getElementById('chatMessages')
+          mc.scrollTop = mc.scrollHeight
+        }, 50)
+      }
+      function closeChat() {
+        document.getElementById('chatDetail').classList.remove('active')
+        activeChat = null
+        renderChatList()
+      }
+      function sendMessage() {
+        let input = document.getElementById('chatInput')
+        let txt = input.value.trim()
+        if (!txt || !activeChat) return
+        if (!chatData[activeChat]) chatData[activeChat] = []
+        chatData[activeChat].push({
+          from: getUserName(),
+          txt: txt,
+          time: new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          dir: 'out',
+        })
+        input.value = ''
+        renderMessages(activeChat)
+        setTimeout(() => {
+          let replies = [
+            'Спасибо! Договорились 🤝',
+            'Отлично, жду! 👍',
+            'Доброе дело! 💜',
+            'Ты супер! 🌟',
+            'До встречи!',
+          ]
+          let autoReply = replies[Math.floor(Math.random() * replies.length)]
+          chatData[activeChat].push({
+            from: document.getElementById('chatDetailName').textContent,
+            txt: autoReply,
+            time: new Date().toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            dir: 'in',
+          })
+          renderMessages(activeChat)
+          let badge = document.getElementById('chatBadge')
+          badge.style.display = 'inline-block'
+          badge.textContent = (parseInt(badge.textContent) || 0) + 1
+          sendNotification(
+            'Новое сообщение',
+            document.getElementById('chatDetailName').textContent +
+              ': ' +
+              autoReply,
+          )
+        }, 1500)
+      }
+      async function requestNotificationPermission() {
+        if (!('Notification' in window)) return
+        if (Notification.permission === 'default') {
+          let perm = await Notification.requestPermission()
+          notificationEnabled = perm === 'granted'
+        } else {
+          notificationEnabled = Notification.permission === 'granted'
+        }
+      }
+      function sendNotification(title, body) {
+        if (!notificationEnabled || !('Notification' in window)) return
+        try {
+          new Notification(title, {
+            body: body,
+            icon: 'icon-192.png',
+            badge: 'icon-192.png',
+            tag: 'helpinder',
+          })
+        } catch (e) {}
+      }
+      function playSound(type) {
+        try {
+          let ctx = new (window.AudioContext || window.webkitAudioContext)()
+          let o = ctx.createOscillator()
+          let g = ctx.createGain()
+          o.connect(g)
+          g.connect(ctx.destination)
+          if (type === 'help') {
+            o.frequency.setValueAtTime(523, 0)
+            o.frequency.setValueAtTime(659, 0.1)
+            o.frequency.setValueAtTime(784, 0.2)
+            g.gain.setValueAtTime(0.15, 0)
+            g.gain.exponentialRampToValueAtTime(0.01, 0.35)
+            o.start(0)
+            o.stop(0.35)
+          } else if (type === 'match') {
+            o.frequency.setValueAtTime(523, 0)
+            o.frequency.setValueAtTime(659, 0.15)
+            o.frequency.setValueAtTime(784, 0.3)
+            o.frequency.setValueAtTime(1047, 0.45)
+            g.gain.setValueAtTime(0.2, 0)
+            g.gain.exponentialRampToValueAtTime(0.01, 0.6)
+            o.start(0)
+            o.stop(0.6)
+          }
+        } catch (e) {}
+      }
+      function getXP() {
+        return parseInt(LC.getItem('xp') || '15')
+      }
+      function getTokens() {
+        return parseInt(LC.getItem('tokens') || '850')
+      }
+      function getHelped() {
+        return parseInt(LC.getItem('helped') || '12')
+      }
+      function getHistory() {
+        try {
+          return JSON.parse(LC.getItem('helpHistory') || '[]')
+        } catch (e) {
+          return []
+        }
+      }
+      function addXP(n) {
+        LC.setItem('xp', Math.max(0, getXP() + n))
+        updateProfileStats()
+      }
+      function addTokens(n) {
+        LC.setItem('tokens', Math.max(0, getTokens() + n))
+        updateProfileStats()
+      }
+      function addHistoryEntry(r) {
+        let h = getHistory()
+        h.unshift({
+          author: r.author,
+          category: r.category,
+          description: r.description,
+          date: new Date().toISOString(),
+          xp: 10,
+        })
+        if (h.length > 20) h = h.slice(0, 20)
+        LC.setItem('helpHistory', JSON.stringify(h))
+        LC.setItem('helped', getHelped() + 1)
+        if (helpChart) updateHistoryChart()
+        if (categoryChart) updateCategoryChart()
+      }
+      function getLevel(xp) {
+        let lvls = [0, 50, 150, 300, 500, 800, 1200, 1700, 2500, 4000, 7000]
+        let names = [
+          '🌱 Росток',
+          '🌸 Помощник',
+          '⭐ Надёжный',
+          '🔥 Герой',
+          '💎 Эксперт',
+          '👑 Мастер',
+          '🚀 Легенда',
+          '🌟 Звезда',
+          '💜 Ангел',
+          '🌍 Меняешь мир',
+        ]
+        for (let i = lvls.length - 1; i >= 0; i--) {
+          if (xp >= lvls[i])
+            return {
+              level: i + 1,
+              name: names[i],
+              next: lvls[i + 1] || 99999,
+              prev: lvls[i],
+            }
+        }
+        return { level: 1, name: names[0], next: 50, prev: 0 }
+      }
+      function initCharts() {
+        setTimeout(() => {
+          try {
+            updateHistoryChart()
+            updateCategoryChart()
+          } catch (e) {}
+        }, 300)
+      }
+      function updateHistoryChart() {
+        if (typeof Chart === 'undefined') return
+        let ctx = document.getElementById('helpChart')
+        if (!ctx) return
+        let h = getHistory()
+        let last7 = []
+        for (let i = 6; i >= 0; i--) {
+          let d = new Date()
+          d.setDate(d.getDate() - i)
+          let day = d.toLocaleDateString('ru', { weekday: 'short' })
+          let count = h.filter(
+            (e) => new Date(e.date).toDateString() === d.toDateString(),
+          ).length
+          last7.push({ day: day, count: count })
+        }
+        let isDark =
+          document.documentElement.getAttribute('data-theme') === 'dark'
+        let gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)'
+        let textColor = isDark ? '#8B82A8' : '#7C7296'
+        if (helpChart) helpChart.destroy()
+        helpChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: last7.map((d) => d.day),
+            datasets: [
+              {
+                label: 'Помощь',
+                data: last7.map((d) => d.count),
+                backgroundColor: '#6C5CE7',
+                borderRadius: 6,
+                borderSkipped: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: gridColor },
+                ticks: { color: textColor, stepSize: 1 },
+              },
+              x: { grid: { display: false }, ticks: { color: textColor } },
+            },
+          },
+        })
+      }
+      function updateCategoryChart() {
+        if (typeof Chart === 'undefined') return
+        let ctx = document.getElementById('categoryChart')
+        if (!ctx) return
+        let h = getHistory()
+        let catCount = {}
+        h.forEach((e) => {
+          catCount[e.category] = (catCount[e.category] || 0) + 1
+        })
+        let entries = Object.entries(catCount)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6)
+        if (!entries.length)
+          entries = [
+            ['Продукты', 3],
+            ['Аптека', 2],
+            ['Выгул', 2],
+            ['IT', 1],
+            ['Перенести', 1],
+            ['Пожилым', 2],
+          ]
+        let isDark =
+          document.documentElement.getAttribute('data-theme') === 'dark'
+        let colors = [
+          '#6C5CE7',
+          '#00C896',
+          '#FF6B8A',
+          '#5B8DEF',
+          '#FFB800',
+          '#A855F7',
+        ]
+        if (categoryChart) categoryChart.destroy()
+        categoryChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: entries.map((e) => e[0].split(' ')[1] || e[0]),
+            datasets: [
+              {
+                data: entries.map((e) => e[1]),
+                backgroundColor: colors.slice(0, entries.length),
+                borderWidth: 2,
+                borderColor: isDark ? '#0F0B1A' : '#fff',
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: isDark ? '#8B82A8' : '#7C7296',
+                  padding: 12,
+                  font: { size: 10 },
+                },
+              },
+            },
+          },
+        })
+      }
+      function renderHistory() {
+        let h = getHistory()
+        let list = document.getElementById('historyList')
+        if (!list) return
+        if (!h.length) {
+          list.innerHTML =
+            '<div style="text-align:center;padding:16px;color:var(--sub);font-size:13px">Пока нет записей — помоги кому-нибудь!</div>'
+          return
+        }
+        let html = h
+          .slice(0, 10)
+          .map(
+            (e) =>
+              `<div class="history-item"><div class="history-icon">🤝</div><div class="history-info"><div class="history-title">Помог ${e.author} — ${e.description.slice(0, 40)}...</div><div class="history-date">${new Date(e.date).toLocaleDateString('ru', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ${e.category}</div></div><div class="history-xp">+${e.xp} XP</div></div>`,
+          )
+          .join('')
+        list.innerHTML = html
+      }
+      function renderProfile() {
+        let xp = getXP(),
+          tk = getTokens(),
+          h = getHelped(),
+          lv = getLevel(xp)
+        let pct = Math.min(
+          100,
+          Math.round(((xp - lv.prev) / (lv.next - lv.prev)) * 100),
+        )
+        document.getElementById('profileAvatar').textContent = getUserInitials()
+        document.getElementById('profileName').textContent = getUserName()
+        document.getElementById('matchAvatar1').textContent = getUserInitials()
+        document.getElementById('profileLevel').textContent =
+          lv.name + ' · ' + xp + ' XP'
+        document.getElementById('xpFill').style.width = pct + '%'
+        document.getElementById('statTokens').textContent = tk
+        document.getElementById('statHelped').textContent = h
+        document.getElementById('statStreak').textContent =
+          parseInt(LC.getItem('streak') || '7') + ' дн'
+        let ach = [
+          '🌱 Первая помощь',
+          '⭐ Рука помощи',
+          '🔥 Огненная серия',
+          '🏆 Десятка',
+          '💯 Сотня',
+          '🎯 Снайпер',
+        ]
+        let achDiv = document.getElementById('achievements')
+        achDiv.innerHTML = ach
+          .map(
+            (a, i) =>
+              `<span class="ach-tag${i >= 4 ? ' locked' : ''}">${a}</span>`,
+          )
+          .join('')
+        renderLeaderboard()
+        updateMission()
+        renderHistory()
+        updateHistoryChart()
+        updateCategoryChart()
+      }
+      function renderLeaderboard() {
+        let lb = [
+          {
+            name: getUserName(),
+            xp: getXP(),
+            initials: getUserInitials(),
+            color: '#6C5CE7',
+          },
+          { name: 'Елена К.', xp: 320, initials: 'ЕК', color: '#00C896' },
+          { name: 'Алексей', xp: 280, initials: 'АЛ', color: '#FF6B8A' },
+          { name: 'Мария П.', xp: 210, initials: 'МП', color: '#5B8DEF' },
+          { name: 'Иван', xp: 155, initials: 'ИВ', color: '#FFB800' },
+        ]
+        lb.sort((a, b) => b.xp - a.xp)
+        let ranks = ['🥇', '🥈', '🥉', '4', '5']
+        let html = lb
+          .map(
+            (u, i) =>
+              `<div class="lb-item"><div class="lb-rank ${i < 3 ? 'top' + (i + 1) : ''}">${ranks[i]}</div><div class="lb-avatar" style="background:${u.color}">${u.initials}</div><div class="lb-info"><div class="lb-name">${u.name}</div><div class="lb-score">${u.xp} XP</div></div>${i === 0 ? '<div class="lb-badge">👑</div>' : ''}</div>`,
+          )
+          .join('')
+        document.getElementById('leaderboard').innerHTML = html
+      }
+      function updateMission() {
+        let helped = getHelped()
+        let goal = 3
+        let done = Math.min(helped % goal || (helped ? goal : 0), goal)
+        document.getElementById('dailyMission').innerHTML =
+          `<div class="mission-icon">🎯</div><div><div class="mission-title">Помоги ${goal} людям сегодня</div><div class="mission-progress"><div class="mission-progress-fill" style="width:${Math.round((done / goal) * 100)}%"></div></div><div style="font-size:11px;color:var(--sub)">+50 DobroTokens</div></div><div style="font-size:22px;font-weight:800;color:var(--acc)">${done}/${goal}</div>`
+      }
+      function updateProfileStats() {
+        renderProfile()
+      }
+      function showToast(msg) {
+        let tc = document.getElementById('toastContainer')
+        let t = document.createElement('div')
+        t.className = 'toast'
+        t.textContent = msg
+        tc.appendChild(t)
+        setTimeout(() => t.remove(), 2500)
+      }
+      function shareApp() {
+        let url = 'https://helpinder-bot.onrender.com'
+        let text =
+          '🤝 Helpinder — Тиндер добрых дел! Помогай людям рядом и прокачивай доброту. Присоединяйся!'
+        if (navigator.share) {
+          navigator
+            .share({ title: 'Helpinder', text: text, url: url })
+            .catch(() => {})
+        } else {
+          navigator.clipboard
+            .writeText(text + ' ' + url)
+            .then(() => showToast('📋 Ссылка скопирована!'))
+            .catch(() => showToast('Поделись: ' + url))
+        }
+      }
+      function inviteFriend() {
+        let code = 'HELP' + Math.random().toString(36).slice(2, 6).toUpperCase()
+        addTokens(100)
+        showToast('🎁 +100 DT за приглашение! Код: ' + code)
+        updateProfileStats()
+      }
+      let onboardStep = 0
+      function initOnboarding() {
+        if (onboardDone) {
+          document.getElementById('onboarding').classList.add('hidden')
+          document.getElementById('app').style.display = 'flex'
+          return
+        }
+        document.getElementById('onboarding').classList.remove('hidden')
+        document.getElementById('app').style.display = 'none'
+        const btn = document.getElementById('onboardBtn')
+        function handleOnboardTap() {
+          onboardStep++
+          let slides = document.querySelectorAll('.onboard-slide')
+          let dots = document.querySelectorAll('.onboard-dots .dot')
+          if (onboardStep >= slides.length) {
+            LC.setItem('onboardDone', '1')
+            document.getElementById('onboarding').classList.add('hidden')
+            document.getElementById('app').style.display = 'flex'
+            return
+          }
+          slides.forEach((s, i) =>
+            s.classList.toggle('active', i === onboardStep),
+          )
+          dots.forEach((d, i) =>
+            d.classList.toggle('active', i === onboardStep),
+          )
+          btn.textContent =
+            onboardStep === slides.length - 1 ? 'Начать!' : 'Далее'
+        }
+        btn.onclick = handleOnboardTap
+        btn.addEventListener('touchend', (e) => {
+          e.preventDefault()
+          handleOnboardTap()
+        })
+      }
+      function closeMatch() {
+        document.getElementById('matchPopup').classList.remove('active')
+      }
+      function showMatchPopup(author) {
+        document.getElementById('matchText').textContent =
+          'Ты и ' +
+          author +
+          ' — теперь команда добра! Свяжитесь и договоритесь.'
+        document.getElementById('matchAvatar2').textContent =
+          AVATARS[author] || author.slice(0, 2)
+        document.getElementById('matchPopup').classList.add('active')
+        playSound('match')
+      }
+      function init() {
+        initTheme()
+        initOnboarding()
+        populateCategories()
+        setupDrag()
+        load()
+        requestNotificationPermission()
+      }
+      window.addEventListener('DOMContentLoaded', init)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {})
+      }
+    </script>
+  </body>
+</html>
