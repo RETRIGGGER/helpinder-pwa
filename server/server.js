@@ -217,14 +217,23 @@ const server = http.createServer(async (req, res) => {
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // SPA fallback: serve index.html for non-API routes
+      // API routes: 404 JSON
       if (pathname.startsWith('/api/')) {
         res.writeHead(404, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ error: 'Not found' }))
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
-        res.end(fs.readFileSync(path.join(STATIC_DIR, 'index.html')))
+        return
       }
+      // SPA fallback: only for HTML/JS/CSS requests
+      if (ext === '' || ext === '.html' || ext === '.js' || ext === '.css') {
+        const idx = path.join(STATIC_DIR, 'index.html')
+        if (fs.existsSync(idx)) {
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+          res.end(fs.readFileSync(idx))
+          return
+        }
+      }
+      res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' })
+      res.end('<h1>404 Not Found</h1>')
       return
     }
     res.writeHead(200, {
