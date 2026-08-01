@@ -2,3 +2,7 @@
 .env
 *.log
 .DS_Store
+lt_out.txt
+lt_err.txt
+.continue/
+

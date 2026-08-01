@@ -19,6 +19,7 @@
     />
 
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="manifest" href="manifest.json" />
     <script
       src="https://api-maps.yandex.ru/2.1/?apikey=1b690a2a-d06d-47ee-a98d-16752161ddfc&amp;lang=ru_RU"
       type="text/javascript"
@@ -1644,7 +1645,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-      const API = 'https://helpinder-bot.onrender.com'
+      const API = window.location.origin
       const LC = window.localStorage
       let UID =
         LC.getItem('uid') ||
@@ -1834,10 +1835,11 @@
       }
       async function load() {
         try {
-          let r = await fetch(API + '/api/requests?user_id=' + UID + '&test=1')
+          let r = await fetch(API + '/api/requests?user_id=' + UID)
           if (r.ok) {
             let d = await r.json()
-            allRequests = d.requests || []
+            allRequests =
+              d.requests && d.requests.length ? d.requests : DEMO.slice()
           }
         } catch (e) {
           allRequests = DEMO.slice()
@@ -2051,18 +2053,33 @@
           setTimeout(() => (s.style.opacity = 0), 2500)
           return
         }
+        if (d.trim().length < 5) {
+          s.textContent = '❌ Описание слишком короткое (мин. 5 символов)'
+          s.style.color = '#FF4757'
+          s.style.opacity = 1
+          setTimeout(() => (s.style.opacity = 0), 3000)
+          return
+        }
         try {
           let r = await fetch(API + '/api/create_request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               user_id: UID,
+              author: getUserName(),
               category: c,
               description: d,
               urgency: u,
             }),
           })
           let j = await r.json()
+          if (!r.ok) {
+            s.textContent = '❌ ' + (j.error || 'Ошибка')
+            s.style.color = '#FF4757'
+            s.style.opacity = 1
+            setTimeout(() => (s.style.opacity = 0), 3000)
+            return
+          }
           s.textContent = '✅ Запрос #' + j.request_id + ' создан! +5 DT'
           s.style.color = '#00C896'
           s.style.opacity = 1
@@ -2608,7 +2625,7 @@
         setTimeout(() => t.remove(), 2500)
       }
       function shareApp() {
-        let url = 'https://helpinder-bot.onrender.com'
+        let url = window.location.origin
         let text =
           '🤝 Helpinder — Тиндер добрых дел! Помогай людям рядом и прокачивай доброту. Присоединяйся!'
         if (navigator.share) {

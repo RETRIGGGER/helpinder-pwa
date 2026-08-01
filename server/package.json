@@ -1,10 +1,11 @@
 {
   "name": "helpinder-server",
   "version": "1.0.0",
-  "description": "Helpinder PWA Server",
+  "description": "Helpinder PWA Server — Тиндер добрых дел",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "engines": {
     "node": ">=18"
