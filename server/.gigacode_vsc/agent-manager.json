@@ -1,9 +1,14 @@
 {
   "worktrees": {},
-  "sessions": {},
+  "sessions": {
+    "ses_04460ad80ffeA4C0G422oHFSs4": {
+      "worktreeId": null,
+      "createdAt": "2026-08-01T04:40:08.608Z"
+    }
+  },
   "tabOrder": {
     "local": [
-      "pending:1"
+      "ses_04460ad80ffeA4C0G422oHFSs4"
     ]
   }
 }
