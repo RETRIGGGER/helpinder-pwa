@@ -1568,11 +1568,6 @@
         <div class="floating-orb"></div>
         <div class="floating-orb"></div>
       </div>
-      <div class="app-bg-effects">
-        <div class="floating-orb"></div>
-        <div class="floating-orb"></div>
-        <div class="floating-orb"></div>
-      </div>
       <div class="header">
         <h1>helpinder</h1>
         <div class="header-right">
@@ -1817,8 +1812,39 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+      // ============================================================
+      // Helpinder App - Улучшенная версия с защитой от XSS
+      // ============================================================
+
       const API = 'https://helpinder-bot.onrender.com'
       const LC = window.localStorage
+
+      // Защита от XSS — экранирование пользовательского ввода
+      function escapeHTML(str) {
+        if (typeof str !== 'string') return str
+        const div = document.createElement('div')
+        div.textContent = str
+        return div.innerHTML
+      }
+
+      // Улучшенная обработка ошибок — больше никаких пустых catch!
+      function handleError(error, context) {
+        console.error(`[Helpinder Error] ${context}:`, error)
+        showToast('⚠️ Произошла ошибка. Попробуйте ещё раз.')
+      }
+
+      function safeFetch(url, options = {}) {
+        return fetch(url, options)
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`)
+            return res
+          })
+          .catch(err => {
+            handleError(err, `fetch(${url})`)
+            throw err
+          })
+      }
+
       let UID =
         LC.getItem('uid') ||
         (LC.setItem('uid', 'user_' + Math.random().toString(36).slice(2, 10)),
@@ -1834,16 +1860,59 @@
         swipeHistory = [],
         helpChart = null,
         categoryChart = null,
-        notificationEnabled = false
+        notificationEnabled = false,
+        isDragging = false,
+        touchStartX = 0,
+        touchStartY = 0,
+        touchCurrentX = 0
 
-      const AVATARS = {
-        'Елена К.': 'ЕК',
-        Алексей: 'АЛ',
-        'Мария П.': 'МП',
-        Иван: 'ИВ',
-        Ольга: 'ОЛ',
-        'Анна В.': 'АВ',
-        GMG: 'GM',
+      // Единый объект конфигурации — все константы в одном месте
+      const CONFIG = {
+        AVATARS: {
+          'Елена К.': 'ЕК',
+          Алексей: 'АЛ',
+          'Мария П.': 'МП',
+          Иван: 'ИВ',
+          Ольга: 'ОЛ',
+          'Анна В.': 'АВ',
+          GMG: 'GM',
+        },
+        AVATAR_COLORS: [
+          '#6C5CE7', '#00C896', '#FF6B8A', '#5B8DEF',
+          '#FFB800', '#A855F7', '#FF4757', '#2ED573',
+        ],
+        URGENCY_COLORS: {
+          '⚡ Прямо сейчас': '#FF4757',
+          '🕐 Сегодня': '#FFB800',
+          '📅 На неделе': '#00C896',
+        },
+        CATEGORY_COLORS: {
+          '🍞 Продукты': ['#FFF0E0', '#E65100'],
+          '💊 Аптека': ['#E8F4F0', '#00796B'],
+          '🧹 Уборка': ['#F0ECFF', '#7B1FA2'],
+          '🐕 Выгул': ['#E0F0FF', '#1565C0'],
+          '🛠 Ремонт': ['#FFF8E0', '#F57F17'],
+          '💻 IT-помощь': ['#E8ECFF', '#283593'],
+          '📦 Перенести': ['#FFE8EC', '#C62828'],
+          '👴 Пожилому': ['#FFF0EC', '#BF360C'],
+          '🚗 Подвезти': ['#ECF8F0', '#1B5E20'],
+          '📝 Документы': ['#F5F0E8', '#5D4037'],
+          '🤝 Другое': ['#F0F0F5', '#37474F'],
+        },
+        CATEGORIES: [
+          '🍞 Продукты', '💊 Аптека', '🧹 Уборка', '🐕 Выгул',
+          '🛠 Ремонт', '💻 IT-помощь', '📦 Перенести',
+          '👴 Пожилому', '🚗 Подвезти', '📝 Документы', '🤝 Другое',
+        ],
+        XP_LEVELS: [0, 50, 150, 300, 500, 800, 1200, 1700, 2500, 4000, 7000],
+        XP_NAMES: [
+          '🌱 Росток', '🌸 Помощник', '⭐ Надёжный', '🔥 Герой',
+          '💎 Эксперт', '👑 Мастер', '🚀 Легенда', '🌟 Звезда',
+          '💜 Ангел', '🌍 Меняешь мир',
+        ],
+        MAX_HISTORY: 20,
+        TOAST_DURATION: 2500,
+        SWIPE_THRESHOLD: 80,
       }
       function getUserName() {
         return LC.getItem('userName') || 'Пользователь'
@@ -1856,47 +1925,10 @@
         LC.setItem('userInitials', name.slice(0, 2).toUpperCase())
         renderProfile()
       }
-      const AVC = [
-        '#6C5CE7',
-        '#00C896',
-        '#FF6B8A',
-        '#5B8DEF',
-        '#FFB800',
-        '#A855F7',
-        '#FF4757',
-        '#2ED573',
-      ]
-      const UC = {
-        '⚡ Прямо сейчас': '#FF4757',
-        '🕐 Сегодня': '#FFB800',
-        '📅 На неделе': '#00C896',
-      }
-      const CC = {
-        '🍞 Продукты': ['#FFF0E0', '#E65100'],
-        '💊 Аптека': ['#E8F4F0', '#00796B'],
-        '🧹 Уборка': ['#F0ECFF', '#7B1FA2'],
-        '🐕 Выгул': ['#E0F0FF', '#1565C0'],
-        '🛠 Ремонт': ['#FFF8E0', '#F57F17'],
-        '💻 IT-помощь': ['#E8ECFF', '#283593'],
-        '📦 Перенести': ['#FFE8EC', '#C62828'],
-        '👴 Пожилому': ['#FFF0EC', '#BF360C'],
-        '🚗 Подвезти': ['#ECF8F0', '#1B5E20'],
-        '📝 Документы': ['#F5F0E8', '#5D4037'],
-        '🤝 Другое': ['#F0F0F5', '#37474F'],
-      }
-      const CATS = [
-        '🍞 Продукты',
-        '💊 Аптека',
-        '🧹 Уборка',
-        '🐕 Выгул',
-        '🛠 Ремонт',
-        '💻 IT-помощь',
-        '📦 Перенести',
-        '👴 Пожилому',
-        '🚗 Подвезти',
-        '📝 Документы',
-        '🤝 Другое',
-      ]
+      const AVC = CONFIG.AVATAR_COLORS
+      const UC = CONFIG.URGENCY_COLORS
+      const CC = CONFIG.CATEGORY_COLORS
+      const CATS = CONFIG.CATEGORIES
       const DEMO = [
         {
           id: 101,
@@ -1968,15 +2000,15 @@
       let allRequests = DEMO.slice()
 
       function av(name, sz = 48) {
-        let i = AVATARS[name] || name.slice(0, 2).toUpperCase()
+        let i = CONFIG.AVATARS[name] || name.slice(0, 2).toUpperCase()
         let c = AVC[(name.charCodeAt(0) || 0) % AVC.length]
-        return `<div class="card-avatar" style="background:${c};width:${sz}px;height:${sz}px;font-size:${Math.floor(sz / 3)}px">${i.slice(0, 2)}</div>`
+        return `<div class="card-avatar" style="background:${c};width:${sz}px;height:${sz}px;font-size:${Math.floor(sz / 3)}px">${escapeHTML(i.slice(0, 2))}</div>`
       }
       function cardHTML(r) {
         let u = UC[r.urgency] || '#6C5CE7',
           us = r.urgency.includes(' ') ? r.urgency.split(' ')[1] : r.urgency
         let cb = CC[r.category] || ['#F0F0F5', '#37474F']
-        return `<div class="card-item"><div class="card-stripe" style="background:${u}"></div><div class="card-body"><div class="card-header">${av(r.author)}<div style="flex:1;min-width:0"><div class="card-name">${r.author}</div><div class="card-meta">📍 ${r.dist} · 🕐 ${r.created}</div></div><div class="card-urgency" style="background:${u}">${us}</div></div><div class="card-category" style="background:${cb[0]};color:${cb[1]}">${r.category}</div><div class="card-desc">${r.description}</div><div class="card-footer"><span>${r.created}</span><span class="card-hint">Нажми 🤍 чтобы помочь</span></div></div></div>`
+        return `<div class="card-item"><div class="card-stripe" style="background:${u}"></div><div class="card-body"><div class="card-header">${av(r.author)}<div style="flex:1;min-width:0"><div class="card-name">${escapeHTML(r.author)}</div><div class="card-meta">📍 ${escapeHTML(r.dist)} · 🕐 ${escapeHTML(r.created)}</div></div><div class="card-urgency" style="background:${u}">${escapeHTML(us)}</div></div><div class="card-category" style="background:${cb[0]};color:${cb[1]}">${escapeHTML(r.category)}</div><div class="card-desc">${escapeHTML(r.description)}</div><div class="card-footer"><span>${escapeHTML(r.created)}</span><span class="card-hint">Нажми 🤍 чтобы помочь</span></div></div></div>`
       }
       function getFilteredRequests() {
         if (currentFilter === 'all') return allRequests
@@ -2007,12 +2039,11 @@
       }
       async function load() {
         try {
-          let r = await fetch(API + '/api/requests?user_id=' + UID + '&test=1')
-          if (r.ok) {
-            let d = await r.json()
-            allRequests = d.requests || []
-          }
+          let r = await safeFetch(API + '/api/requests?user_id=' + UID + '&test=1')
+          let d = await r.json()
+          allRequests = d.requests || []
         } catch (e) {
+          console.log('Using demo data (API unavailable)')
           allRequests = DEMO.slice()
         }
         if (!allRequests.length) allRequests = DEMO.slice()
@@ -2048,7 +2079,7 @@
           cards[0].style.opacity = '0'
         }
         try {
-          await fetch(API + '/api/' + dir, {
+          await safeFetch(API + '/api/' + dir, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: UID, request_id: r.id }),
@@ -2060,9 +2091,9 @@
             sendNotification(
               'Ты откликнулся на помощь!',
               'Ты помогаешь ' +
-                r.author +
+                escapeHTML(r.author) +
                 ' — ' +
-                r.description.slice(0, 40) +
+                escapeHTML(r.description.slice(0, 40)) +
                 '...',
             )
             if (Math.random() > 0.6)
@@ -2070,7 +2101,10 @@
             playSound('help')
             showToast('+10 XP · +5 🪙')
           }
-        } catch (e) {}
+        } catch (e) {
+          console.warn('API call failed, continuing offline:', e.message)
+          showToast('⚠️ Работает офлайн-режим')
+        }
         I++
         await new Promise((resolve) => setTimeout(resolve, 400))
         if (I >= requests.length) {
@@ -2215,8 +2249,12 @@
         )
 
         // Ripple effect for buttons
-        document.querySelectorAll('.action-btn, .submit-btn, .onboard-btn').forEach(btn => {
+        document.querySelectorAll('.action-btn, .submit-btn').forEach(btn => {
           btn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const y = e.clientY - rect.top
+            
             let ripple = document.createElement('span')
             ripple.style.cssText = `
               position: absolute;
@@ -2226,8 +2264,8 @@
               height: 100px;
               margin-left: -50px;
               margin-top: -50px;
-              left: ${e.offsetX}px;
-              top: ${e.offsetY}px;
+              left: ${x}px;
+              top: ${y}px;
               animation: rippleEffect 0.6s ease-out forwards;
               pointer-events: none;
             `
@@ -2289,20 +2327,43 @@
         document.getElementById('themeToggle').textContent =
           saved === 'dark' ? '☀️' : '🌙'
       }
+      // Валидация формы — улучшенная проверка
+      function validateForm(category, description, urgency) {
+        const errors = []
+        if (!category) errors.push('Выбери категорию')
+        if (!urgency) errors.push('Выбери срочность')
+        if (!description || description.trim().length < 10) 
+          errors.push('Описание минимум 10 символов')
+        if (description && description.length > 500) 
+          errors.push('Максимум 500 символов')
+        return errors
+      }
+
+      function showStatus(element, message, isSuccess) {
+        element.textContent = message
+        element.style.color = isSuccess ? '#00C896' : '#FF4757'
+        element.style.opacity = 1
+        setTimeout(() => (element.style.opacity = 0), isSuccess ? 3000 : 2500)
+      }
+
       async function createRequest() {
         let c = document.getElementById('cat').value
-        let d = document.getElementById('desc').value
+        let d = document.getElementById('desc').value.trim()
         let u = document.getElementById('urg').value
         let s = document.getElementById('statusMsg')
-        if (!c || !d || !u) {
-          s.textContent = '❌ Заполни все поля'
-          s.style.color = '#FF4757'
-          s.style.opacity = 1
-          setTimeout(() => (s.style.opacity = 0), 2500)
+        
+        const errors = validateForm(c, d, u)
+        if (errors.length > 0) {
+          showStatus(s, '❌ ' + errors[0], false)
           return
         }
+        
+        s.textContent = '⏳ Отправка...'
+        s.style.color = '#6C5CE7'
+        s.style.opacity = 1
+        
         try {
-          let r = await fetch(API + '/api/create_request', {
+          let r = await safeFetch(API + '/api/create_request', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2313,19 +2374,14 @@
             }),
           })
           let j = await r.json()
-          s.textContent = '✅ Запрос #' + j.request_id + ' создан! +5 DT'
-          s.style.color = '#00C896'
-          s.style.opacity = 1
+          showStatus(s, '✅ Запрос #' + j.request_id + ' создан! +5 DT', true)
           document.getElementById('desc').value = ''
           addTokens(5)
           addXP(5)
           updateProfileStats()
-          setTimeout(() => (s.style.opacity = 0), 3000)
         } catch (e) {
-          s.textContent = '❌ Ошибка соединения'
-          s.style.color = '#FF4757'
-          s.style.opacity = 1
-          setTimeout(() => (s.style.opacity = 0), 2500)
+          showStatus(s, '❌ Ошибка соединения', false)
+          console.error('Create request failed:', e)
         }
       }
       function populateCategories() {
@@ -2363,15 +2419,10 @@
                       [r.lat, r.lon],
                       {
                         balloonContent:
-                          '<b>' +
-                          r.category +
-                          '</b><br>' +
-                          r.description +
-                          '<br><small>' +
-                          r.author +
-                          ' · ' +
-                          r.dist +
-                          '</small>',
+                          '<b>' + escapeHTML(r.category) + '</b><br>' +
+                          escapeHTML(r.description) +
+                          '<br><small>' + escapeHTML(r.author) +
+                          ' · ' + escapeHTML(r.dist) + '</small>',
                       },
                       { preset: 'islands#circleIcon', iconColor: u },
                     )
@@ -2416,7 +2467,7 @@
         ]
         let html = ''
         demoChats.forEach((c) => {
-          html += `<div class="chat-item" onclick="openChat(${c.id},'${c.name}','${c.task}')"><div class="chat-avatar" style="background:${AVC[c.id % AVC.length]}">${AVATARS[c.name] || c.name.slice(0, 2)}</div><div class="chat-info"><div class="chat-name">${c.name}</div><div class="chat-last">${c.last}</div></div><div class="chat-meta"><div class="chat-time">${c.time}</div>${c.unread ? `<div class="chat-badge">${c.unread}</div>` : ''}</div></div>`
+          html += `<div class="chat-item" onclick="openChat(${c.id},'${escapeHTML(c.name)}','${escapeHTML(c.task)}')"><div class="chat-avatar" style="background:${AVC[c.id % AVC.length]}">${escapeHTML(CONFIG.AVATARS[c.name] || c.name.slice(0, 2))}</div><div class="chat-info"><div class="chat-name">${escapeHTML(c.name)}</div><div class="chat-last">${escapeHTML(c.last)}</div></div><div class="chat-meta"><div class="chat-time">${escapeHTML(c.time)}</div>${c.unread ? `<div class="chat-badge">${c.unread}</div>` : ''}</div></div>`
         })
         if (!html)
           html =
@@ -2667,35 +2718,42 @@
           document.documentElement.getAttribute('data-theme') === 'dark'
         let gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)'
         let textColor = isDark ? '#8B82A8' : '#7C7296'
-        if (helpChart) helpChart.destroy()
-        helpChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: last7.map((d) => d.day),
-            datasets: [
-              {
+        
+        if (!helpChart) {
+          helpChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: last7.map((d) => d.day),
+              datasets: [{
                 label: 'Помощь',
                 data: last7.map((d) => d.count),
                 backgroundColor: '#6C5CE7',
                 borderRadius: 6,
                 borderSkipped: false,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: { color: gridColor },
-                ticks: { color: textColor, stepSize: 1 },
-              },
-              x: { grid: { display: false }, ticks: { color: textColor } },
+              }],
             },
-          },
-        })
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: gridColor },
+                  ticks: { color: textColor, stepSize: 1 },
+                },
+                x: { grid: { display: false }, ticks: { color: textColor } },
+              },
+            },
+          })
+        } else {
+          helpChart.data.labels = last7.map((d) => d.day)
+          helpChart.data.datasets[0].data = last7.map((d) => d.count)
+          helpChart.options.scales.y.grid.color = gridColor
+          helpChart.options.scales.y.ticks.color = textColor
+          helpChart.options.scales.x.ticks.color = textColor
+          helpChart.update()
+        }
       }
       function updateCategoryChart() {
         if (typeof Chart === 'undefined') return
@@ -2728,35 +2786,42 @@
           '#FFB800',
           '#A855F7',
         ]
-        if (categoryChart) categoryChart.destroy()
-        categoryChart = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            labels: entries.map((e) => e[0].split(' ')[1] || e[0]),
-            datasets: [
-              {
+        
+        if (!categoryChart) {
+          categoryChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: entries.map((e) => e[0].split(' ')[1] || e[0]),
+              datasets: [{
                 data: entries.map((e) => e[1]),
                 backgroundColor: colors.slice(0, entries.length),
                 borderWidth: 2,
                 borderColor: isDark ? '#0F0B1A' : '#fff',
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  color: isDark ? '#8B82A8' : '#7C7296',
-                  padding: 12,
-                  font: { size: 10 },
+              }],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: isDark ? '#8B82A8' : '#7C7296',
+                    padding: 12,
+                    font: { size: 10 },
+                  },
                 },
               },
             },
-          },
-        })
+          })
+        } else {
+          categoryChart.data.labels = entries.map((e) => e[0].split(' ')[1] || e[0])
+          categoryChart.data.datasets[0].data = entries.map((e) => e[1])
+          categoryChart.data.datasets[0].backgroundColor = colors.slice(0, entries.length)
+          categoryChart.data.datasets[0].borderColor = isDark ? '#0F0B1A' : '#fff'
+          categoryChart.options.plugins.legend.labels.color = isDark ? '#8B82A8' : '#7C7296'
+          categoryChart.update()
+        }
       }
       function renderHistory() {
         let h = getHistory()
@@ -2771,7 +2836,7 @@
           .slice(0, 10)
           .map(
             (e) =>
-              `<div class="history-item"><div class="history-icon">🤝</div><div class="history-info"><div class="history-title">Помог ${e.author} — ${e.description.slice(0, 40)}...</div><div class="history-date">${new Date(e.date).toLocaleDateString('ru', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ${e.category}</div></div><div class="history-xp">+${e.xp} XP</div></div>`,
+              `<div class="history-item"><div class="history-icon">🤝</div><div class="history-info"><div class="history-title">Помог ${escapeHTML(e.author)} — ${escapeHTML(e.description.slice(0, 40))}...</div><div class="history-date">${new Date(e.date).toLocaleDateString('ru', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ${escapeHTML(e.category)}</div></div><div class="history-xp">+${e.xp} XP</div></div>`,
           )
           .join('')
         list.innerHTML = html
@@ -2888,7 +2953,13 @@
         document.getElementById('onboarding').classList.remove('hidden')
         document.getElementById('app').style.display = 'none'
         const btn = document.getElementById('onboardBtn')
-        function handleOnboardTap() {
+        let lastTap = 0
+        function handleOnboardTap(e) {
+          // Debounce - предотвращаем двойной клик (touch + click)
+          const now = Date.now()
+          if (now - lastTap < 300) return
+          lastTap = now
+          
           onboardStep++
           let slides = document.querySelectorAll('.onboard-slide')
           let dots = document.querySelectorAll('.onboard-dots .dot')
@@ -2908,10 +2979,6 @@
             onboardStep === slides.length - 1 ? 'Начать!' : 'Далее'
         }
         btn.onclick = handleOnboardTap
-        btn.addEventListener('touchend', (e) => {
-          e.preventDefault()
-          handleOnboardTap()
-        })
       }
       function closeMatch() {
         document.getElementById('matchPopup').classList.remove('active')
