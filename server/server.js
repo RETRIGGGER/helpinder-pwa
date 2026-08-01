@@ -3,6 +3,10 @@ const fs = require('fs')
 const path = require('path')
 
 const PORT = process.env.PORT || 3000
+
+// Static files directory - ROOT of the project (where index.html lives)
+const STATIC_DIR = path.join(__dirname, '..')
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -197,22 +201,29 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
-  // Serve static files
+  // Serve static files from STATIC_DIR (root project)
   let filePath = pathname === '/' ? '/index.html' : pathname
-  filePath = path.join(__dirname, filePath)
+  filePath = path.join(STATIC_DIR, filePath.replace(/^\//, ''))
+
+  // Security: prevent directory traversal
+  if (!filePath.startsWith(STATIC_DIR)) {
+    res.writeHead(403, { 'Content-Type': 'text/html' })
+    res.end('<h1>403 Forbidden</h1>')
+    return
+  }
 
   const ext = path.extname(filePath)
   const contentType = MIME[ext] || 'application/octet-stream'
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // For SPA, serve index.html for non-API routes
+      // SPA fallback: serve index.html for non-API routes
       if (pathname.startsWith('/api/')) {
         res.writeHead(404, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ error: 'Not found' }))
       } else {
-        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' })
-        res.end('<h1>404 Not Found</h1>')
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+        res.end(fs.readFileSync(path.join(STATIC_DIR, 'index.html')))
       }
       return
     }
@@ -228,5 +239,6 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Helpinder PWA server running on port ${PORT}`)
-  console.log(`API available at http://localhost:${PORT}/api/`)
+  console.log(`API: http://localhost:${PORT}/api/`)
+  console.log(`Serving static files from: ${STATIC_DIR}`)
 })
