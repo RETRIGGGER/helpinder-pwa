@@ -55,6 +55,9 @@
           setTimeout(() => ripple.remove(), 600)
         })
       })
+    
+      const _cs=document.getElementById('cardStack');if(_cs){_cs.addEventListener('mousemove',function(e){if(isDragging)return;var r=_cs.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,cr=r.width/2,cr2=r.height/2,rx=(y-cr2)/cr2*-6,ry=(x-cr2)/cr2*6,c=document.querySelectorAll('.card-item');if(c[0])c[0].style.transform='perspective(800px) rotateX('+rx+'deg) rotateY('+ry+'deg) translateY(0) scale(1)'});_cs.addEventListener('mouseleave',function(){if(!isDragging){var c2=document.querySelectorAll('.card-item');if(c2[0])c2[0].style.transform=''}})}
+      document.querySelectorAll('.action-btn,.submit-btn,.onboard-btn').forEach(function(b){b.addEventListener('click',function(e){var r=document.createElement('span');r.style.cssText='position:absolute;border-radius:50%;background:rgba(108,92,231,.3);width:100px;height:100px;margin-left:-50px;margin-top:-50px;left:'+e.offsetX+'px;top:'+e.offsetY+'px;animation:rippleEffect .6s ease-out forwards;pointer-events:none';this.appendChild(r);setTimeout(function(){r.remove()},600)})})
     </script>
     <title>Helpinder — Тиндер добрых дел</title>
     <style>
@@ -1736,6 +1739,12 @@
         position: relative;
         overflow: hidden;
       }
+      
+      @keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.85) rotateX(-12deg)}to{opacity:1;transform:translateY(0) scale(1) rotateX(0)}}
+      @keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(20px,-30px) scale(1.1)}50%{transform:translate(-15px,20px) scale(.95)}75%{transform:translate(25px,15px) scale(1.05)}}
+      @keyframes avatarPulse{0%,100%{box-shadow:0 4px 12px rgba(0,0,0,.15)}50%{box-shadow:0 4px 20px rgba(108,92,231,.4)}}
+      @keyframes categoryGlow{0%,100%{box-shadow:0 0 0 rgba(108,92,231,0)}50%{box-shadow:0 0 12px rgba(108,92,231,.2)}}
+      @keyframes rippleEffect{from{transform:scale(0);opacity:1}to{transform:scale(4);opacity:0}}
       </style>
   </head>
   <body>
