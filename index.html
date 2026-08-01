@@ -17,8 +17,11 @@
       name="description"
       content="Helpinder — Тиндер добрых дел. Помогай людям рядом!"
     />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
-    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="icon-192.png?v=2" />
     <script
       src="https://api-maps.yandex.ru/2.1/?apikey=1b690a2a-d06d-47ee-a98d-16752161ddfc&amp;lang=ru_RU"
       type="text/javascript"
@@ -289,35 +292,74 @@
         position: absolute;
         inset: 0;
         border-radius: var(--radius);
-        background: var(--card);
-        border: 1px solid var(--card-border);
-        box-shadow: var(--shadow);
+        background: linear-gradient(145deg, #2a2540 0%, #1a1530 50%, #0f0b1a 100%);
+        border: 1px solid rgba(108, 92, 231, 0.3);
+        box-shadow: 
+          0 8px 32px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(108, 92, 231, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
         overflow: hidden;
         transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1.2);
         will-change: transform;
       }
+      .card-item::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, transparent 50%, rgba(255, 107, 138, 0.08) 100%);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .card-item::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 30% 30%, rgba(108, 92, 231, 0.1) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .card-item:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 
+          0 16px 48px rgba(0, 0, 0, 0.7),
+          0 0 0 1px rgba(108, 92, 231, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        border-color: rgba(108, 92, 231, 0.5);
+      }
       .card-item:nth-child(2) {
         transform: translateY(6px) scale(0.96);
         z-index: 2;
-        opacity: 0.9;
+        opacity: 0.85;
+        border-color: rgba(108, 92, 231, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
       }
       .card-item:nth-child(3) {
         transform: translateY(12px) scale(0.92);
         z-index: 1;
-        opacity: 0.7;
+        opacity: 0.65;
+        border-color: rgba(108, 92, 231, 0.15);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
       }
       .card-item:nth-child(n + 4) {
         display: none;
       }
       .card-stripe {
-        height: 5px;
+        height: 6px;
         border-radius: 5px 5px 0 0;
+        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+        position: relative;
+        z-index: 2;
       }
       .card-body {
         padding: 20px 22px 16px;
         display: flex;
         flex-direction: column;
         height: 100%;
+        position: relative;
+        z-index: 2;
       }
       .card-header {
         display: flex;
@@ -2039,7 +2081,7 @@
         document.getElementById('themeToggle').textContent =
           saved === 'dark' ? '☀️' : '🌙'
       }
-      async function createRequest() {
+       async function createRequest() {
         let c = document.getElementById('cat').value
         let d = document.getElementById('desc').value
         let u = document.getElementById('urg').value
@@ -2052,18 +2094,19 @@
           return
         }
         try {
-          let r = await fetch(API + '/api/create_request', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              user_id: UID,
-              category: c,
-              description: d,
-              urgency: u,
-            }),
-          })
-          let j = await r.json()
-          s.textContent = '✅ Запрос #' + j.request_id + ' создан! +5 DT'
+          // Save to localStorage instead of API
+          let req = {
+            id: Date.now(),
+            user_id: UID,
+            category: c,
+            description: d,
+            urgency: u,
+            created: new Date().toISOString()
+          }
+          let history = JSON.parse(localStorage.getItem('requests') || '[]')
+          history.push(req)
+          localStorage.setItem('requests', JSON.stringify(history))
+          s.textContent = '✅ Запрос создан! +5 DT'
           s.style.color = '#00C896'
           s.style.opacity = 1
           document.getElementById('desc').value = ''
@@ -2072,7 +2115,7 @@
           updateProfileStats()
           setTimeout(() => (s.style.opacity = 0), 3000)
         } catch (e) {
-          s.textContent = '❌ Ошибка соединения'
+          s.textContent = '❌ Ошибка сохранения'
           s.style.color = '#FF4757'
           s.style.opacity = 1
           setTimeout(() => (s.style.opacity = 0), 2500)
